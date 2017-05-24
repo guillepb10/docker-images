@@ -1,8 +1,10 @@
-FROM cloudbees/jnlp-slave-with-java-build-tools-dockerfile
+FROM cloudbees/jnlp-slave-with-java-build-tools
 
-RUN /bin/bash -c 'sudo yum update -y &&\
-                    sudo yum install -y docker &&\
-                    sudo service docker start && \
-                    sudo usermod -a -G docker jenkins'
+# set up docker repos
+RUN apt-get install apt-transport-https ca-certificates curl software-properties-common
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+RUN sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
-ENTRYPOINT ["/opt/bin/entry_point.sh", "/usr/local/bin/jenkins-slave"]
+# install docker
+RUN sudo apt-get update
+RUN sudo apt-get install docker-ce
